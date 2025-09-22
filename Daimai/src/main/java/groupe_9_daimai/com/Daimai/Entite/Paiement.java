@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "Paiement")
@@ -29,6 +31,13 @@ public class Paiement {
 
     @Column
     private StatutPaiement statutPaiement;
+
+
+    @OneToMany(mappedBy = "paiement")
+    private List<AffectationPaiement> affectationPaiements = new ArrayList<>();
+
+    @OneToOne(mappedBy = "paiement")
+    private Recu recu;
 
 
 }

@@ -1,7 +1,9 @@
 package groupe_9_daimai.com.Daimai.Service;
 
 
-@Sevice
+import org.springframework.stereotype.Service;
+
+@Service
 public class EnfantService {
 
 
