@@ -17,6 +17,7 @@ public class JwUtil {
     private static final Key KEY = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
     private static final long DATE_EXPIRATION = 864_000_000;
 
+
     // Génération du token
     public String generateToken(String telephone) {
         return Jwts.builder()
@@ -26,8 +27,8 @@ public class JwUtil {
                 .compact();
     }
 
-    // Extraction du username/telephone
-    public static String extractUsername(String token) {
+   /* // Extraction du username/telephone
+    public  String extractUsername(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(KEY)
                 .build()
@@ -47,5 +48,5 @@ public class JwUtil {
         } catch (JwtException e) {
             return false;
         }
-    }
+    }*/
 }
