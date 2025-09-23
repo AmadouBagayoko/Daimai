@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.6</version>
+		<version>3.3.4</version> <!-- ⚡ version stable -->
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
+
 	<groupId>groupe_9_daimai.com</groupId>
 	<artifactId>Daimai</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -16,7 +19,9 @@
 
 	<properties>
 		<java.version>21</java.version>
-		<jjwt.version>0.11.5</jjwt.version> <!-- Version pour JJWT -->
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
+		<jjwt.version>0.11.5</jjwt.version>
 	</properties>
 
 	<dependencies>
@@ -68,7 +73,7 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- Java mail pour envoi d'email -->
+		<!-- Java mail -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
@@ -81,22 +86,13 @@
 			<version>20230618</version>
 		</dependency>
 
-
-
-		<!-- EasySendSMS -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-
+		<!-- Spring Boot JSON -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-json</artifactId>
 		</dependency>
 
-
-
-		<!-- JJWT (io.jsonwebtoken) - REQUISE pour votre code JwtUtil -->
+		<!-- JJWT -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
@@ -115,7 +111,7 @@
 			<scope>runtime</scope>
 		</dependency>
 
-		<!-- JWT Auth0 (optionnel - vous pouvez garder ou supprimer) -->
+		<!-- JWT Auth0 -->
 		<dependency>
 			<groupId>com.auth0</groupId>
 			<artifactId>java-jwt</artifactId>
@@ -129,7 +125,10 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.11.0</version>
 				<configuration>
+					<source>${maven.compiler.source}</source>
+					<target>${maven.compiler.target}</target>
 					<annotationProcessorPaths>
 						<path>
 							<groupId>org.projectlombok</groupId>
@@ -143,14 +142,6 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<excludes>
-						<exclude>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-						</exclude>
-					</excludes>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>
