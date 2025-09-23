@@ -26,7 +26,7 @@ public class Securite {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf( csrf ->csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/Connexion", "/api/auth/Inscription", "/api/notification/send").permitAll()
+                        .requestMatchers("/api/auth/Connexion", "/api/auth/Inscription", "/api/notification/send","/api/parrains","/api/parrains/2").permitAll()
                         .anyRequest().authenticated()
                 );
         return http.build();
