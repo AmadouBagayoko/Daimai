@@ -1,9 +1,9 @@
 package groupe_9_daimai.com.Daimai.Service;
 
-
-import org.springframework.stereotype.Service;
-
+import groupe_9_daimai.com.Daimai.DTO.ParrainageDTO;
+import groupe_9_daimai.com.Daimai.Entite.Enfant;
 import groupe_9_daimai.com.Daimai.Entite.Parrain;
+import groupe_9_daimai.com.Daimai.Repository.EnfantRepository;
 import groupe_9_daimai.com.Daimai.Repository.ParrainRepository;
 import org.springframework.stereotype.Service;
 
@@ -13,26 +13,29 @@ import java.util.Optional;
 @Service
 public class ParrainService {
 
-    //Creation de compte et Authentification
-
-
-
-
-    //Authentification
-
-
-    //Parrainer un enfant
-
-
-    //Paiement
-
     private final ParrainRepository parrainRepository;
+    private final EnfantRepository enfantRepository;
 
-    public ParrainService(ParrainRepository parrainRepository) {
+    public ParrainService(ParrainRepository parrainRepository, EnfantRepository enfantRepository) {
         this.parrainRepository = parrainRepository;
+        this.enfantRepository = enfantRepository;
     }
 
-    // CREATE
+    // Parrainer un enfant
+    public Parrain parrainerEnfant(ParrainageDTO dto) {
+        Parrain parrain = parrainRepository.findById(dto.getParrainId())
+                .orElseThrow(() -> new RuntimeException("Parrain non trouvé"));
+
+        Enfant enfant = enfantRepository.findById(dto.getEnfantId())
+                .orElseThrow(() -> new RuntimeException("Enfant non trouvé"));
+
+        // Ajouter l’enfant à la liste du parrain
+        parrain.getEnfants().add(enfant);
+
+        return parrainRepository.save(parrain);
+    }
+
+    // CRUD déjà existants...
     public Parrain createParrain(Parrain parrain) {
         if (parrainRepository.existsByEmail(parrain.getEmail())) {
             throw new RuntimeException("Email déjà utilisé !");
@@ -43,17 +46,14 @@ public class ParrainService {
         return parrainRepository.save(parrain);
     }
 
-    // READ ALL
     public List<Parrain> getAllParrains() {
         return parrainRepository.findAll();
     }
 
-    // READ ONE
     public Optional<Parrain> getParrainById(Long id) {
         return parrainRepository.findById(id);
     }
 
-    // UPDATE
     public Parrain updateParrain(Long id, Parrain parrainDetails) {
         Parrain parrain = parrainRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Parrain non trouvé"));
@@ -72,7 +72,6 @@ public class ParrainService {
         return parrainRepository.save(parrain);
     }
 
-    // DELETE
     public void deleteParrain(Long id) {
         Parrain parrain = parrainRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Parrain non trouvé"));

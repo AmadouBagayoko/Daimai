@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference; // NOUVEL IMPORT
+
 import java.util.List;
 
 @Entity
@@ -39,9 +41,10 @@ public class Association {
     private String photo;
 
     @Column
-    private Boolean statutBloquer;
+    private Boolean estvalider;
 
     @OneToMany(mappedBy = "association")
+    @JsonManagedReference
     private List<Enfant> Enfants;
 
     @OneToMany(mappedBy = "association")
@@ -64,7 +67,7 @@ public class Association {
         this.autorisation = autorisation;
         this.telephone = telephone;
         this.photo = photo;
-        this.statutBloquer = statutBloquer;
+        this.estvalider = statutBloquer;
         Enfants = enfants;
         Notifications = notifications;
         Depenses = depenses;
@@ -143,12 +146,12 @@ public class Association {
         this.photo = photo;
     }
 
-    public Boolean getStatutBloquer() {
-        return statutBloquer;
+    public Boolean getEstvalider() {
+        return estvalider;
     }
 
-    public void setStatutBloquer(Boolean statutBloquer) {
-        this.statutBloquer = statutBloquer;
+    public void setEstvalider(Boolean statutBloquer) {
+        this.estvalider = statutBloquer;
     }
 
     public List<Enfant> getEnfants() {
@@ -197,7 +200,7 @@ public class Association {
                 ", autorisation='" + autorisation + '\'' +
                 ", telephone=" + telephone +
                 ", photo='" + photo + '\'' +
-                ", statutBloquer=" + statutBloquer +
+                ", estvalider=" + estvalider +
                 ", Enfants=" + Enfants +
                 ", Notifications=" + Notifications +
                 ", Depenses=" + Depenses +

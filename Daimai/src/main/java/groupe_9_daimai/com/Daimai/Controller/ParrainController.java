@@ -1,5 +1,6 @@
 package groupe_9_daimai.com.Daimai.Controller;
 
+import groupe_9_daimai.com.Daimai.DTO.ParrainageDTO;
 import groupe_9_daimai.com.Daimai.Entite.Parrain;
 import groupe_9_daimai.com.Daimai.Service.ParrainService;
 import org.springframework.http.ResponseEntity;
@@ -17,19 +18,23 @@ public class ParrainController {
         this.parrainService = parrainService;
     }
 
-    // CREATE
+    // Parrainer un enfant
+    @PostMapping("/parrainer")
+    public ResponseEntity<Parrain> parrainerEnfant(@RequestBody ParrainageDTO dto) {
+        return ResponseEntity.ok(parrainService.parrainerEnfant(dto));
+    }
+
+    // CRUD déjà existants...
     @PostMapping
     public ResponseEntity<Parrain> createParrain(@RequestBody Parrain parrain) {
         return ResponseEntity.ok(parrainService.createParrain(parrain));
     }
 
-    // READ ALL
     @GetMapping
     public ResponseEntity<List<Parrain>> getAllParrains() {
         return ResponseEntity.ok(parrainService.getAllParrains());
     }
 
-    // READ ONE
     @GetMapping("/{id}")
     public ResponseEntity<Parrain> getParrainById(@PathVariable Long id) {
         return parrainService.getParrainById(id)
@@ -37,13 +42,11 @@ public class ParrainController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // UPDATE
     @PutMapping("/{id}")
     public ResponseEntity<Parrain> updateParrain(@PathVariable Long id, @RequestBody Parrain parrain) {
         return ResponseEntity.ok(parrainService.updateParrain(id, parrain));
     }
 
-    // DELETE
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteParrain(@PathVariable Long id) {
         parrainService.deleteParrain(id);

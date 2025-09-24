@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "Parrain")
@@ -55,10 +56,11 @@ public class Parrain {
     @ManyToMany
     @JoinTable(
             name = "parrainage",
-            joinColumns = @JoinColumn(name = "enfant_id"),
-            inverseJoinColumns = @JoinColumn(name = "parrain_id")
+            joinColumns = @JoinColumn(name = "parrain_id"),
+            inverseJoinColumns = @JoinColumn(name = "enfant_id")
     )
-    private List<Enfant> enfants ;
+    @JsonIgnore
+    private List<Enfant> enfants = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "administrateur_id")

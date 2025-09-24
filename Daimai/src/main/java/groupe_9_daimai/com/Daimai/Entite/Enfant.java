@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "Enfant")
@@ -48,12 +49,14 @@ public class Enfant {
 
     @ManyToOne
     @JoinColumn(name = "association_id")
+    @JsonBackReference
     private Association association;
 
     @OneToMany(mappedBy = "enfant")
     private List<RapportScolaire> rapportScolaire;
 
     @ManyToMany(mappedBy = "enfants")
+    @JsonBackReference
     private List<Parrain> parrains ;
 
     public Enfant() {}
