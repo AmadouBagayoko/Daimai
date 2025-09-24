@@ -17,27 +17,12 @@ public class RecuRequestDTO {
     private Long paiementId;
 
     // Getters et Setters
-    public Double getMontantPayer() {
-        return montantPayer;
-    }
+    public Double getMontantPayer() { return montantPayer; }
+    public void setMontantPayer(Double montantPayer) { this.montantPayer = montantPayer; }
 
-    public void setMontantPayer(Double montantPayer) {
-        this.montantPayer = montantPayer;
-    }
+    public LocalDate getDate() { return date; }
+    public void setDate(LocalDate date) { this.date = date; }
 
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public Long getPaiementId() {
-        return paiementId;
-    }
-
-    public void setPaiementId(Long paiementId) {
-        this.paiementId = paiementId;
-    }
+    public Long getPaiementId() { return paiementId; }
+    public void setPaiementId(Long paiementId) { this.paiementId = paiementId; }
 }

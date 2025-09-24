@@ -2,8 +2,8 @@ package groupe_9_daimai.com.Daimai.Service;
 
 import groupe_9_daimai.com.Daimai.DTO.RecuRequestDTO;
 import groupe_9_daimai.com.Daimai.DTO.RecuResponseDTO;
-import groupe_9_daimai.com.Daimai.Entite.Paiement;
-import groupe_9_daimai.com.Daimai.Entite.Recu;
+import groupe_9_daimai.com.Daimai.Entite.*;
+import groupe_9_daimai.com.Daimai.Entite.enums.TypeNotifcation;
 import groupe_9_daimai.com.Daimai.Repository.PaiementRepository;
 import groupe_9_daimai.com.Daimai.Repository.RecuRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +26,14 @@ public class RecuService {
     private PaiementRepository paiementRepository;
 
     @Autowired
-    private RecuCodeGenerator codeGenerator;
-
-    @Autowired
     private NotificationService notificationService;
+
+    // Générer un code de reçu unique
+    private String generateRecuCode(Long paiementId) {
+        String datePart = LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String randomPart = String.valueOf((int) (Math.random() * 10000));
+        return String.format("RECU-%s-%s-%d", datePart, randomPart, paiementId);
+    }
 
     // Conversion Entity -> DTO
     private RecuResponseDTO convertToDTO(Recu recu) {
@@ -40,7 +44,6 @@ public class RecuService {
         dto.setPaiementId(recu.getPaiement().getId());
         dto.setCodeRecu(recu.getCodeRecu());
 
-        // Informations du parrain
         if (recu.getPaiement().getParrain() != null) {
             dto.setParrainNom(recu.getPaiement().getParrain().getNom());
             dto.setParrainPrenom(recu.getPaiement().getParrain().getPrenom());
@@ -57,8 +60,63 @@ public class RecuService {
         recu.setMontantPayer(dto.getMontantPayer());
         recu.setDate(dto.getDate() != null ? dto.getDate() : LocalDate.now());
         recu.setPaiement(paiement);
-        recu.setCodeRecu(codeGenerator.generateRecuCode(paiement.getId()));
+        recu.setCodeRecu(generateRecuCode(paiement.getId()));
         return recu;
+    }
+
+    // Méthode pour créer et envoyer les notifications de reçu
+    private void envoyerNotificationsRecu(Recu recu, Parrain parrain, Association association) {
+        // Notification EMAIL
+        String messageEmail = creerMessageEmail(recu, parrain);
+        Notification notificationEmail = new Notification();
+        notificationEmail.setTypeNotifcation(TypeNotifcation.EMAIL);
+        notificationEmail.setEnvoyeur("systeme@daimai.ml");
+        notificationEmail.setRecepteur(parrain.getEmail());
+        notificationEmail.setContenue(messageEmail);
+        notificationEmail.setAssociation(association);
+
+        notificationService.envoiNotification(notificationEmail);
+
+        // Notification SMS (si le téléphone est disponible)
+        if (parrain.getTelephone() != null && !parrain.getTelephone().isEmpty()) {
+            String messageSMS = creerMessageSMS(recu, parrain);
+            Notification notificationSMS = new Notification();
+            notificationSMS.setTypeNotifcation(TypeNotifcation.SMS);
+            notificationSMS.setEnvoyeur("DAIMAI");
+            notificationSMS.setRecepteur(parrain.getTelephone());
+            notificationSMS.setContenue(messageSMS);
+            notificationSMS.setAssociation(association);
+
+            notificationService.envoiNotification(notificationSMS);
+        }
+    }
+
+    private String creerMessageEmail(Recu recu, Parrain parrain) {
+        return String.format(
+                "Bonjour %s %s,\n\n" +
+                        "VOTRE REÇU DE PAIEMENT - DAIMAI\n" +
+                        "───────────────────────────────\n\n" +
+                        "📋 Code du reçu: %s\n" +
+                        "💰 Montant payé: %.2f FCFA\n" +
+                        "📅 Date: %s\n" +
+                        "💳 Mode de paiement: %s\n\n" +
+                        "Merci pour votre générosité !\n\n" +
+                        "Cordialement,\n" +
+                        "L'équipe Daimai",
+                parrain.getPrenom(), parrain.getNom(),
+                recu.getCodeRecu(),
+                recu.getMontantPayer(),
+                recu.getDate(),
+                recu.getPaiement().getModePaiement()
+        );
+    }
+
+    private String creerMessageSMS(Recu recu, Parrain parrain) {
+        return String.format(
+                "Reçu Daimai: %.2f FCFA payes. Code: %s. Merci!",
+                recu.getMontantPayer(),
+                recu.getCodeRecu()
+        );
     }
 
     // Créer un reçu avec notification
@@ -80,8 +138,9 @@ public class RecuService {
 
             Recu savedRecu = recuRepository.save(recu);
 
-            // Envoyer la notification
-            notificationService.envoyerNotificationRecu(savedRecu, paiement.getParrain());
+            // Récupérer l'association et envoyer les notifications
+            Association association = getAssociationFromPaiement(paiement);
+            envoyerNotificationsRecu(savedRecu, paiement.getParrain(), association);
 
             return convertToDTO(savedRecu);
 
@@ -90,7 +149,17 @@ public class RecuService {
         }
     }
 
-    // Générer un reçu automatiquement à partir d'un paiement
+    // Méthode pour récupérer l'association
+    private Association getAssociationFromPaiement(Paiement paiement) {
+        // Implémentation selon votre modèle de données
+        // Exemple simplifié - à adapter
+        Association association = new Association();
+        association.setNom("Association Daimai");
+        association.setEmail("contact@daimai.ml");
+        return association;
+    }
+
+    // Générer un reçu automatiquement à partir d'un paiement confirmé
     public RecuResponseDTO genererRecuAutomatique(Long paiementId) {
         try {
             Optional<Paiement> paiementOpt = paiementRepository.findById(paiementId);
@@ -104,16 +173,22 @@ public class RecuService {
 
             Paiement paiement = paiementOpt.get();
 
+            // Vérifier que le paiement est confirmé
+            if (paiement.getStatutPaiement() != groupe_9_daimai.com.Daimai.Entite.enums.StatutPaiement.CONFIRME) {
+                throw new RuntimeException("Impossible de générer un reçu pour un paiement non confirmé");
+            }
+
             Recu recu = new Recu();
             recu.setMontantPayer(paiement.getMontant());
             recu.setDate(LocalDate.now());
             recu.setPaiement(paiement);
-            recu.setCodeRecu(codeGenerator.generateRecuCode(paiementId));
+            recu.setCodeRecu(generateRecuCode(paiementId));
 
             Recu savedRecu = recuRepository.save(recu);
 
-            // Envoyer la notification
-            notificationService.envoyerNotificationRecu(savedRecu, paiement.getParrain());
+            // Envoyer les notifications
+            Association association = getAssociationFromPaiement(paiement);
+            envoyerNotificationsRecu(savedRecu, paiement.getParrain(), association);
 
             return convertToDTO(savedRecu);
 
@@ -215,8 +290,6 @@ public class RecuService {
         }
     }
 
-    // Méthodes spécifiques supplémentaires
-
     // Récupérer les reçus d'un parrain
     public List<RecuResponseDTO> getRecusByParrain(Long parrainId) {
         try {
@@ -260,7 +333,10 @@ public class RecuService {
             }
 
             Recu recu = recuOpt.get();
-            notificationService.envoyerNotificationRecu(recu, recu.getPaiement().getParrain());
+            Association association = getAssociationFromPaiement(recu.getPaiement());
+
+            // Renvoyer les notifications
+            envoyerNotificationsRecu(recu, recu.getPaiement().getParrain(), association);
 
         } catch (Exception e) {
             throw new RuntimeException("Erreur lors du renvoi de la notification: " + e.getMessage());

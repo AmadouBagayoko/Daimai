@@ -18,6 +18,10 @@ public class Recu {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
+    private String codeRecu; // Ajout de ce champ
+
+
     @Column
     private double montantPayer;
 
