@@ -62,7 +62,7 @@ public class AuthentificationController {
     public ResponseEntity<?> connexion(@RequestBody ConnexionClasse connexion) {
         try {
             return ResponseEntity.ok(authentificationService.connexion(connexion.getTelephone(), connexion.getMotDePasse()));
-        } catch (Exception e) {
+        } catch (Exception e) { 
             return ResponseEntity.status(401).body(e.getMessage());
         }
     }
