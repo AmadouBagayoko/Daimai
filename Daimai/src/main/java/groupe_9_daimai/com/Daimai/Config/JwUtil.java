@@ -28,7 +28,7 @@ public class JwUtil {
     }
 
    /* // Extraction du username/telephone
-    public  String extractUsername(String token) {
+    public  String extraireTelephone(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(KEY)
                 .build()
