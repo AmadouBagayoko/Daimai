@@ -31,4 +31,5 @@ public class NotificationController {
             return ResponseEntity.status(500).body("Erreur lors de l'envoi : " + e.getMessage());
         }
     }
+
 }
