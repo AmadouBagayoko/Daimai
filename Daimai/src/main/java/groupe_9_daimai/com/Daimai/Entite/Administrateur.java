@@ -7,7 +7,6 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "Administrateur")
-@NoArgsConstructor
 public class Administrateur {
 
     @Id
