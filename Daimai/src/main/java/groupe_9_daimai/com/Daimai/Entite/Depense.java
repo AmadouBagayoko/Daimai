@@ -37,4 +37,9 @@ public class Depense {
             name = "association_id"
     )
     private Association association ;
+
+    @ManyToOne
+    @JoinColumn(name = "annee_scolaire_id")
+    private AnneeScolaire anneeScolaire;
+
 }

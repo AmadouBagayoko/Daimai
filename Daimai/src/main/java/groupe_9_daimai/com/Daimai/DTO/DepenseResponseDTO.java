@@ -11,66 +11,52 @@ public class DepenseResponseDTO {
     private LocalDate dateDepense;
     private Long associationId;
     private String associationNom;
+    private Long anneeScolaireId;
+    private String anneeScolaireLibelle;
+    private Boolean anneeScolaireActive;
 
     // Constructeurs
     public DepenseResponseDTO() {}
 
-    public DepenseResponseDTO(Long id, Double montant, CategorieDepense categorie,
-                              LocalDate dateDepense, Long associationId, String associationNom) {
+    public DepenseResponseDTO(Long id, Double montant, CategorieDepense categorie, LocalDate dateDepense,
+                              Long associationId, String associationNom, Long anneeScolaireId,
+                              String anneeScolaireLibelle, Boolean anneeScolaireActive) {
         this.id = id;
         this.montant = montant;
         this.categorie = categorie;
         this.dateDepense = dateDepense;
         this.associationId = associationId;
         this.associationNom = associationNom;
+        this.anneeScolaireId = anneeScolaireId;
+        this.anneeScolaireLibelle = anneeScolaireLibelle;
+        this.anneeScolaireActive = anneeScolaireActive;
     }
 
     // Getters et Setters
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Double getMontant() { return montant; }
+    public void setMontant(Double montant) { this.montant = montant; }
 
-    public Double getMontant() {
-        return montant;
-    }
+    public CategorieDepense getCategorie() { return categorie; }
+    public void setCategorie(CategorieDepense categorie) { this.categorie = categorie; }
 
-    public void setMontant(Double montant) {
-        this.montant = montant;
-    }
+    public LocalDate getDateDepense() { return dateDepense; }
+    public void setDateDepense(LocalDate dateDepense) { this.dateDepense = dateDepense; }
 
-    public CategorieDepense getCategorie() {
-        return categorie;
-    }
+    public Long getAssociationId() { return associationId; }
+    public void setAssociationId(Long associationId) { this.associationId = associationId; }
 
-    public void setCategorie(CategorieDepense categorie) {
-        this.categorie = categorie;
-    }
+    public String getAssociationNom() { return associationNom; }
+    public void setAssociationNom(String associationNom) { this.associationNom = associationNom; }
 
-    public LocalDate getDateDepense() {
-        return dateDepense;
-    }
+    public Long getAnneeScolaireId() { return anneeScolaireId; }
+    public void setAnneeScolaireId(Long anneeScolaireId) { this.anneeScolaireId = anneeScolaireId; }
 
-    public void setDateDepense(LocalDate dateDepense) {
-        this.dateDepense = dateDepense;
-    }
+    public String getAnneeScolaireLibelle() { return anneeScolaireLibelle; }
+    public void setAnneeScolaireLibelle(String anneeScolaireLibelle) { this.anneeScolaireLibelle = anneeScolaireLibelle; }
 
-    public Long getAssociationId() {
-        return associationId;
-    }
-
-    public void setAssociationId(Long associationId) {
-        this.associationId = associationId;
-    }
-
-    public String getAssociationNom() {
-        return associationNom;
-    }
-
-    public void setAssociationNom(String associationNom) {
-        this.associationNom = associationNom;
-    }
+    public Boolean getAnneeScolaireActive() { return anneeScolaireActive; }
+    public void setAnneeScolaireActive(Boolean anneeScolaireActive) { this.anneeScolaireActive = anneeScolaireActive; }
 }

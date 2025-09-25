@@ -20,46 +20,22 @@ public class DepenseRequestDTO {
     @NotNull(message = "L'ID de l'association est obligatoire")
     private Long associationId;
 
-    // Constructeurs
-    public DepenseRequestDTO() {}
-
-    public DepenseRequestDTO(Double montant, CategorieDepense categorie, LocalDate dateDepense, Long associationId) {
-        this.montant = montant;
-        this.categorie = categorie;
-        this.dateDepense = dateDepense;
-        this.associationId = associationId;
-    }
+    @NotNull(message = "L'ID de l'année scolaire est obligatoire")
+    private Long anneeScolaireId;
 
     // Getters et Setters
-    public Double getMontant() {
-        return montant;
-    }
+    public Double getMontant() { return montant; }
+    public void setMontant(Double montant) { this.montant = montant; }
 
-    public void setMontant(Double montant) {
-        this.montant = montant;
-    }
+    public CategorieDepense getCategorie() { return categorie; }
+    public void setCategorie(CategorieDepense categorie) { this.categorie = categorie; }
 
-    public CategorieDepense getCategorie() {
-        return categorie;
-    }
+    public LocalDate getDateDepense() { return dateDepense; }
+    public void setDateDepense(LocalDate dateDepense) { this.dateDepense = dateDepense; }
 
-    public void setCategorie(CategorieDepense categorie) {
-        this.categorie = categorie;
-    }
+    public Long getAssociationId() { return associationId; }
+    public void setAssociationId(Long associationId) { this.associationId = associationId; }
 
-    public LocalDate getDateDepense() {
-        return dateDepense;
-    }
-
-    public void setDateDepense(LocalDate dateDepense) {
-        this.dateDepense = dateDepense;
-    }
-
-    public Long getAssociationId() {
-        return associationId;
-    }
-
-    public void setAssociationId(Long associationId) {
-        this.associationId = associationId;
-    }
+    public Long getAnneeScolaireId() { return anneeScolaireId; }
+    public void setAnneeScolaireId(Long anneeScolaireId) { this.anneeScolaireId = anneeScolaireId; }
 }

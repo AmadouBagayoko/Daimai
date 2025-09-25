@@ -26,7 +26,7 @@ public class DepenseController {
     @Autowired
     private DepenseService depenseService;
 
-    // Créer une dépense avec validation DTO
+    // Créer une dépense
     @PostMapping
     public ResponseEntity<?> createDepense(@Valid @RequestBody DepenseRequestDTO depenseRequestDTO) {
         try {
@@ -39,7 +39,7 @@ public class DepenseController {
         }
     }
 
-    // Récupérer toutes les dépenses avec DTO
+    // Récupérer toutes les dépenses
     @GetMapping
     public ResponseEntity<?> getAllDepenses() {
         try {
@@ -52,7 +52,7 @@ public class DepenseController {
         }
     }
 
-    // Récupérer une dépense par ID avec DTO
+    // Récupérer une dépense par ID
     @GetMapping("/{id}")
     public ResponseEntity<?> getDepenseById(@PathVariable Long id) {
         try {
@@ -65,7 +65,7 @@ public class DepenseController {
         }
     }
 
-    // Modifier une dépense avec validation DTO
+    // Modifier une dépense
     @PutMapping("/{id}")
     public ResponseEntity<?> updateDepense(@PathVariable Long id, @Valid @RequestBody DepenseRequestDTO depenseRequestDTO) {
         try {
@@ -93,7 +93,9 @@ public class DepenseController {
         }
     }
 
-    // Récupérer les dépenses d'une association avec DTO
+    // === NOUVEAUX ENDPOINTS AVEC ANNEE SCOLAIRE ===
+
+    // Récupérer les dépenses d'une association
     @GetMapping("/association/{associationId}")
     public ResponseEntity<?> getDepensesByAssociation(@PathVariable Long associationId) {
         try {
@@ -106,7 +108,47 @@ public class DepenseController {
         }
     }
 
-    // Récupérer les dépenses par catégorie avec DTO
+    // Récupérer les dépenses d'une année scolaire
+    @GetMapping("/annee-scolaire/{anneeScolaireId}")
+    public ResponseEntity<?> getDepensesByAnneeScolaire(@PathVariable Long anneeScolaireId) {
+        try {
+            List<DepenseResponseDTO> depenses = depenseService.getDepensesByAnneeScolaire(anneeScolaireId);
+            return ResponseEntity.ok(depenses);
+        } catch (RuntimeException e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+    // Récupérer les dépenses d'une association et année scolaire
+    @GetMapping("/association/{associationId}/annee-scolaire/{anneeScolaireId}")
+    public ResponseEntity<?> getDepensesByAssociationAndAnneeScolaire(
+            @PathVariable Long associationId, @PathVariable Long anneeScolaireId) {
+        try {
+            List<DepenseResponseDTO> depenses = depenseService.getDepensesByAssociationAndAnneeScolaire(associationId, anneeScolaireId);
+            return ResponseEntity.ok(depenses);
+        } catch (RuntimeException e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+    // Récupérer les dépenses visibles par les parrains (année active)
+    @GetMapping("/association/{associationId}/visibles-parrains")
+    public ResponseEntity<?> getDepensesVisiblesParParrains(@PathVariable Long associationId) {
+        try {
+            List<DepenseResponseDTO> depenses = depenseService.getDepensesVisiblesParParrains(associationId);
+            return ResponseEntity.ok(depenses);
+        } catch (RuntimeException e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+    // Récupérer les dépenses par catégorie
     @GetMapping("/categorie/{categorie}")
     public ResponseEntity<?> getDepensesByCategorie(@PathVariable CategorieDepense categorie) {
         try {
@@ -119,11 +161,10 @@ public class DepenseController {
         }
     }
 
-    // Récupérer les dépenses par association et catégorie avec DTO
+    // Récupérer les dépenses par association et catégorie
     @GetMapping("/association/{associationId}/categorie/{categorie}")
     public ResponseEntity<?> getDepensesByAssociationAndCategorie(
-            @PathVariable Long associationId,
-            @PathVariable CategorieDepense categorie) {
+            @PathVariable Long associationId, @PathVariable CategorieDepense categorie) {
         try {
             List<DepenseResponseDTO> depenses = depenseService.getDepensesByAssociationAndCategorie(associationId, categorie);
             return ResponseEntity.ok(depenses);
@@ -134,7 +175,22 @@ public class DepenseController {
         }
     }
 
-    // Récupérer les dépenses par période avec DTO
+    // Récupérer les dépenses par association, année scolaire et catégorie
+    @GetMapping("/association/{associationId}/annee-scolaire/{anneeScolaireId}/categorie/{categorie}")
+    public ResponseEntity<?> getDepensesByAssociationAndAnneeScolaireAndCategorie(
+            @PathVariable Long associationId, @PathVariable Long anneeScolaireId, @PathVariable CategorieDepense categorie) {
+        try {
+            List<DepenseResponseDTO> depenses = depenseService.getDepensesByAssociationAndAnneeScolaireAndCategorie(
+                    associationId, anneeScolaireId, categorie);
+            return ResponseEntity.ok(depenses);
+        } catch (RuntimeException e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+    // Récupérer les dépenses par période
     @GetMapping("/periode")
     public ResponseEntity<?> getDepensesByPeriod(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -165,8 +221,26 @@ public class DepenseController {
         }
     }
 
+    // Récupérer le total des dépenses d'une association et année scolaire
+    @GetMapping("/association/{associationId}/annee-scolaire/{anneeScolaireId}/total")
+    public ResponseEntity<?> getTotalDepensesByAssociationAndAnneeScolaire(
+            @PathVariable Long associationId, @PathVariable Long anneeScolaireId) {
+        try {
+            Double total = depenseService.getTotalDepensesByAssociationAndAnneeScolaire(associationId, anneeScolaireId);
+            Map<String, Object> response = new HashMap<>();
+            response.put("associationId", associationId);
+            response.put("anneeScolaireId", anneeScolaireId);
+            response.put("totalDepenses", total);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
     // Récupérer le total des dépenses d'une association sur une période
-    @GetMapping("/association/{associationId}/total/periode")
+    @GetMapping("/association/{associationId}/periode/total")
     public ResponseEntity<?> getTotalDepensesByAssociationAndPeriod(
             @PathVariable Long associationId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -179,6 +253,56 @@ public class DepenseController {
             response.put("endDate", endDate);
             response.put("totalDepenses", total);
             return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+    // Récupérer l'année scolaire active d'une association
+    @GetMapping("/association/{associationId}/annee-scolaire-active")
+    public ResponseEntity<?> getAnneeScolaireActiveByAssociation(@PathVariable Long associationId) {
+        try {
+            Object anneeActive = depenseService.getAnneeScolaireActiveByAssociation(associationId);
+            return ResponseEntity.ok(anneeActive);
+        } catch (RuntimeException e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        }
+    }
+
+    // Endpoint pour les statistiques avancées
+    @GetMapping("/association/{associationId}/statistiques")
+    public ResponseEntity<?> getStatistiquesDepenses(@PathVariable Long associationId) {
+        try {
+            Map<String, Object> statistiques = new HashMap<>();
+
+            // Total général
+            Double totalGeneral = depenseService.getTotalDepensesByAssociation(associationId);
+            statistiques.put("totalGeneral", totalGeneral != null ? totalGeneral : 0.0);
+
+            // Total par catégorie
+            Map<String, Double> totalParCategorie = new HashMap<>();
+            for (CategorieDepense categorie : CategorieDepense.values()) {
+                List<DepenseResponseDTO> depenses = depenseService.getDepensesByAssociationAndCategorie(associationId, categorie);
+                Double totalCategorie = depenses.stream()
+                        .mapToDouble(DepenseResponseDTO::getMontant)
+                        .sum();
+                totalParCategorie.put(categorie.name(), totalCategorie);
+            }
+            statistiques.put("totalParCategorie", totalParCategorie);
+
+            // Dépenses de l'année active
+            try {
+                Object anneeActive = depenseService.getAnneeScolaireActiveByAssociation(associationId);
+                statistiques.put("anneeScolaireActive", anneeActive);
+            } catch (RuntimeException e) {
+                statistiques.put("anneeScolaireActive", "Aucune année active");
+            }
+
+            return ResponseEntity.ok(statistiques);
         } catch (RuntimeException e) {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", e.getMessage());

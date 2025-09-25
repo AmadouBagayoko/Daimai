@@ -25,7 +25,7 @@ public class AssociationController {
     @Autowired
     private AssociationService associationService;
 
-    // === ENDPOINTS EXISTANTS ===
+    // === GESTION DES ASSOCIATIONS ===
 
     @PostMapping
     public ResponseEntity<?> createAssociation(@Valid @RequestBody AssociationRequestDTO associationRequestDTO) {
@@ -67,7 +67,95 @@ public class AssociationController {
         }
     }
 
-    // === NOUVEAUX ENDPOINTS ===
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateAssociation(@PathVariable Long id, @Valid @RequestBody AssociationRequestDTO associationRequestDTO) {
+        try {
+            AssociationResponseDTO association = associationService.updateAssociation(id, associationRequestDTO);
+            return ResponseEntity.ok(association);
+        } catch (RuntimeException e) {
+            return errorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PatchMapping("/{id}/statut")
+    public ResponseEntity<?> toggleStatutAssociation(@PathVariable Long id, @RequestParam Boolean statutBloquer) {
+        try {
+            AssociationResponseDTO association = associationService.toggleStatutAssociation(id, statutBloquer);
+            return ResponseEntity.ok(association);
+        } catch (RuntimeException e) {
+            return errorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PatchMapping("/{id}/validation")
+    public ResponseEntity<?> validerAssociation(@PathVariable Long id, @RequestParam String autorisation) {
+        try {
+            AssociationResponseDTO association = associationService.validerAssociation(id, autorisation);
+            return ResponseEntity.ok(association);
+        } catch (RuntimeException e) {
+            return errorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/recherche")
+    public ResponseEntity<?> searchAssociations(@RequestParam String recherche) {
+        try {
+            List<AssociationResponseDTO> associations = associationService.searchAssociations(recherche);
+            return ResponseEntity.ok(associations);
+        } catch (RuntimeException e) {
+            return errorResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/domaine/{domaine}")
+    public ResponseEntity<?> getAssociationsByDomaine(@PathVariable String domaine) {
+        try {
+            List<AssociationResponseDTO> associations = associationService.getAssociationsByDomaine(domaine);
+            return ResponseEntity.ok(associations);
+        } catch (RuntimeException e) {
+            return errorResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/statut/{statutBloquer}")
+    public ResponseEntity<?> getAssociationsByStatut(@PathVariable Boolean statutBloquer) {
+        try {
+            List<AssociationResponseDTO> associations = associationService.getAssociationsByStatut(statutBloquer);
+            return ResponseEntity.ok(associations);
+        } catch (RuntimeException e) {
+            return errorResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteAssociation(@PathVariable Long id) {
+        try {
+            associationService.deleteAssociation(id);
+            return ResponseEntity.ok(successResponse("Association supprimée avec succès"));
+        } catch (RuntimeException e) {
+            return errorResponse(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/{id}/statistiques")
+    public ResponseEntity<?> getStatistiquesAssociation(@PathVariable Long id) {
+        try {
+            AssociationResponseDTO association = associationService.getAssociationById(id);
+            Integer nombreEnfants = associationService.getNombreTotalEnfants(id);
+            Integer nombreParrains = associationService.getNombreTotalParrains(id);
+
+            Map<String, Object> statistiques = new HashMap<>();
+            statistiques.put("association", association);
+            statistiques.put("nombreEnfants", nombreEnfants);
+            statistiques.put("nombreParrains", nombreParrains);
+
+            return ResponseEntity.ok(statistiques);
+        } catch (RuntimeException e) {
+            return errorResponse(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // === GESTION DES ENFANTS ===
 
     @PostMapping("/{associationId}/enfants")
     public ResponseEntity<?> enregistrerEnfant(@PathVariable Long associationId, @Valid @RequestBody EnfantRequestDTO enfantRequestDTO) {
@@ -77,6 +165,26 @@ public class AssociationController {
             return ResponseEntity.status(HttpStatus.CREATED).body(enfant);
         } catch (RuntimeException e) {
             return errorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/{associationId}/enfants")
+    public ResponseEntity<?> getEnfantsByAssociation(@PathVariable Long associationId) {
+        try {
+            List<EnfantResponseDTO> enfants = associationService.getEnfantsByAssociation(associationId);
+            return ResponseEntity.ok(enfants);
+        } catch (RuntimeException e) {
+            return errorResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/enfants/{enfantId}")
+    public ResponseEntity<?> getEnfantById(@PathVariable Long enfantId) {
+        try {
+            EnfantResponseDTO enfant = associationService.getEnfantById(enfantId);
+            return ResponseEntity.ok(enfant);
+        } catch (RuntimeException e) {
+            return errorResponse(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -90,6 +198,8 @@ public class AssociationController {
         }
     }
 
+    // === GESTION DES PAIEMENTS ===
+
     @PostMapping("/paiements")
     public ResponseEntity<?> enregistrerPaiement(@Valid @RequestBody PaiementRequestDTO paiementRequestDTO) {
         try {
@@ -99,6 +209,8 @@ public class AssociationController {
             return errorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    // === GESTION DES RAPPORTS ===
 
     @PostMapping("/rapports-scolaires")
     public ResponseEntity<?> genererRapportScolaire(@Valid @RequestBody RapportRequestDTO rapportRequestDTO) {
@@ -122,6 +234,8 @@ public class AssociationController {
             return errorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    // === GESTION DES PARRAINAGES ===
 
     @PostMapping("/demandes-parrainage")
     public ResponseEntity<?> envoyerDemandeParrainage(@Valid @RequestBody ParrainageRequestDTO parrainageRequestDTO) {

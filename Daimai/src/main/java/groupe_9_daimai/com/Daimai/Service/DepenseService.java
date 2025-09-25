@@ -4,11 +4,14 @@ import groupe_9_daimai.com.Daimai.DTO.DepenseRequestDTO;
 import groupe_9_daimai.com.Daimai.DTO.DepenseResponseDTO;
 import groupe_9_daimai.com.Daimai.Entite.Depense;
 import groupe_9_daimai.com.Daimai.Entite.Association;
+import groupe_9_daimai.com.Daimai.Entite.AnneeScolaire;
 import groupe_9_daimai.com.Daimai.Entite.enums.CategorieDepense;
 import groupe_9_daimai.com.Daimai.Repository.DepenseRepository;
 import groupe_9_daimai.com.Daimai.Repository.AssociationRepository;
+import groupe_9_daimai.com.Daimai.Repository.AnneeScolaireRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,6 +19,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class DepenseService {
 
     @Autowired
@@ -24,24 +28,42 @@ public class DepenseService {
     @Autowired
     private AssociationRepository associationRepository;
 
+    @Autowired
+    private AnneeScolaireRepository anneeScolaireRepository;
+
     // Convertir Entity vers ResponseDTO
     private DepenseResponseDTO convertToDTO(Depense depense) {
+        if (depense == null) return null;
+
+        // Vérifier si l'année scolaire est active
+        boolean anneeActive = false;
+        if (depense.getAnneeScolaire() != null) {
+            LocalDate now = LocalDate.now();
+            anneeActive = !now.isBefore(depense.getAnneeScolaire().getDateDebut()) &&
+                    !now.isAfter(depense.getAnneeScolaire().getDateFin());
+        }
+
         return new DepenseResponseDTO(
                 depense.getId(),
                 depense.getMontant(),
                 depense.getCategorie(),
                 depense.getDateDepense(),
                 depense.getAssociation().getId(),
-                depense.getAssociation().getNom()
+                depense.getAssociation().getNom(),
+                depense.getAnneeScolaire() != null ? depense.getAnneeScolaire().getId() : null,
+                depense.getAnneeScolaire() != null ? depense.getAnneeScolaire().getLibelle() : null,
+                anneeActive
         );
     }
 
     // Convertir RequestDTO vers Entity
-    private Depense convertToEntity(DepenseRequestDTO depenseDTO) {
+    private Depense convertToEntity(DepenseRequestDTO depenseDTO, Association association, AnneeScolaire anneeScolaire) {
         Depense depense = new Depense();
         depense.setMontant(depenseDTO.getMontant());
         depense.setCategorie(depenseDTO.getCategorie());
         depense.setDateDepense(depenseDTO.getDateDepense() != null ? depenseDTO.getDateDepense() : LocalDate.now());
+        depense.setAssociation(association);
+        depense.setAnneeScolaire(anneeScolaire);
         return depense;
     }
 
@@ -54,12 +76,24 @@ public class DepenseService {
                 throw new RuntimeException("Association non trouvée avec l'ID: " + depenseRequestDTO.getAssociationId());
             }
 
+            // Vérifier que l'année scolaire existe
+            Optional<AnneeScolaire> anneeScolaireOpt = anneeScolaireRepository.findById(depenseRequestDTO.getAnneeScolaireId());
+            if (anneeScolaireOpt.isEmpty()) {
+                throw new RuntimeException("Année scolaire non trouvée avec l'ID: " + depenseRequestDTO.getAnneeScolaireId());
+            }
+
+            // Vérifier que l'année scolaire appartient à l'association
+            AnneeScolaire anneeScolaire = anneeScolaireOpt.get();
+            if (!anneeScolaire.getAssociation().getId().equals(depenseRequestDTO.getAssociationId())) {
+                throw new RuntimeException("L'année scolaire n'appartient pas à cette association");
+            }
+
             Association association = associationOpt.get();
-            Depense depense = convertToEntity(depenseRequestDTO);
-            depense.setAssociation(association);
+            Depense depense = convertToEntity(depenseRequestDTO, association, anneeScolaire);
 
             Depense savedDepense = depenseRepository.save(depense);
             return convertToDTO(savedDepense);
+
         } catch (Exception e) {
             throw new RuntimeException("Erreur lors de la création de la dépense: " + e.getMessage());
         }
@@ -68,7 +102,6 @@ public class DepenseService {
     // Récupérer toutes les dépenses avec DTO
     public List<DepenseResponseDTO> getAllDepenses() {
         try {
-            // Utilisation de la projection DTO directement depuis le repository
             return depenseRepository.findAllDepenseDTOs();
         } catch (Exception e) {
             throw new RuntimeException("Erreur lors de la récupération des dépenses: " + e.getMessage());
@@ -78,7 +111,6 @@ public class DepenseService {
     // Récupérer une dépense par ID avec DTO
     public DepenseResponseDTO getDepenseById(Long id) {
         try {
-            // Utilisation de la projection DTO directement
             DepenseResponseDTO depenseDTO = depenseRepository.findDepenseDTOById(id);
             if (depenseDTO == null) {
                 throw new RuntimeException("Dépense non trouvée avec l'ID: " + id);
@@ -97,10 +129,17 @@ public class DepenseService {
                 throw new RuntimeException("Dépense non trouvée avec l'ID: " + id);
             }
 
+            // Vérifier que l'année scolaire existe
+            Optional<AnneeScolaire> anneeScolaireOpt = anneeScolaireRepository.findById(depenseRequestDTO.getAnneeScolaireId());
+            if (anneeScolaireOpt.isEmpty()) {
+                throw new RuntimeException("Année scolaire non trouvée avec l'ID: " + depenseRequestDTO.getAnneeScolaireId());
+            }
+
             Depense depense = depenseOpt.get();
             depense.setMontant(depenseRequestDTO.getMontant());
             depense.setCategorie(depenseRequestDTO.getCategorie());
             depense.setDateDepense(depenseRequestDTO.getDateDepense());
+            depense.setAnneeScolaire(anneeScolaireOpt.get());
 
             // Vérifier si l'association a changé
             if (!depense.getAssociation().getId().equals(depenseRequestDTO.getAssociationId())) {
@@ -113,6 +152,7 @@ public class DepenseService {
 
             Depense updatedDepense = depenseRepository.save(depense);
             return convertToDTO(updatedDepense);
+
         } catch (Exception e) {
             throw new RuntimeException("Erreur lors de la modification de la dépense: " + e.getMessage());
         }
@@ -130,7 +170,7 @@ public class DepenseService {
         }
     }
 
-    // Méthodes spécifiques avec DTOs
+    // === METHODES SPECIFIQUES AVEC ANNEE SCOLAIRE ===
 
     // Récupérer les dépenses par association avec DTO
     public List<DepenseResponseDTO> getDepensesByAssociation(Long associationId) {
@@ -138,6 +178,36 @@ public class DepenseService {
             return depenseRepository.findDepenseDTOsByAssociationId(associationId);
         } catch (Exception e) {
             throw new RuntimeException("Erreur lors de la récupération des dépenses de l'association: " + e.getMessage());
+        }
+    }
+
+    // Récupérer les dépenses par année scolaire
+    public List<DepenseResponseDTO> getDepensesByAnneeScolaire(Long anneeScolaireId) {
+        try {
+            return depenseRepository.findDepenseDTOsByAnneeScolaireId(anneeScolaireId);
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la récupération des dépenses par année scolaire: " + e.getMessage());
+        }
+    }
+
+    // Récupérer les dépenses par association et année scolaire
+    public List<DepenseResponseDTO> getDepensesByAssociationAndAnneeScolaire(Long associationId, Long anneeScolaireId) {
+        try {
+            List<Depense> depenses = depenseRepository.findByAssociationIdAndAnneeScolaireId(associationId, anneeScolaireId);
+            return depenses.stream()
+                    .map(this::convertToDTO)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la récupération des dépenses: " + e.getMessage());
+        }
+    }
+
+    // Récupérer les dépenses visibles par les parrains (année active)
+    public List<DepenseResponseDTO> getDepensesVisiblesParParrains(Long associationId) {
+        try {
+            return depenseRepository.findDepensesVisiblesParParrains(associationId);
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la récupération des dépenses visibles: " + e.getMessage());
         }
     }
 
@@ -157,6 +227,20 @@ public class DepenseService {
     public List<DepenseResponseDTO> getDepensesByAssociationAndCategorie(Long associationId, CategorieDepense categorie) {
         try {
             List<Depense> depenses = depenseRepository.findByAssociationIdAndCategorie(associationId, categorie);
+            return depenses.stream()
+                    .map(this::convertToDTO)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la récupération des dépenses: " + e.getMessage());
+        }
+    }
+
+    // Récupérer les dépenses par association, année scolaire et catégorie
+    public List<DepenseResponseDTO> getDepensesByAssociationAndAnneeScolaireAndCategorie(
+            Long associationId, Long anneeScolaireId, CategorieDepense categorie) {
+        try {
+            List<Depense> depenses = depenseRepository.findByAssociationIdAndAnneeScolaireIdAndCategorie(
+                    associationId, anneeScolaireId, categorie);
             return depenses.stream()
                     .map(this::convertToDTO)
                     .collect(Collectors.toList());
@@ -187,6 +271,16 @@ public class DepenseService {
         }
     }
 
+    // Calculer le total des dépenses d'une association et année scolaire
+    public Double getTotalDepensesByAssociationAndAnneeScolaire(Long associationId, Long anneeScolaireId) {
+        try {
+            Double total = depenseRepository.getTotalDepensesByAssociationIdAndAnneeScolaireId(associationId, anneeScolaireId);
+            return total != null ? total : 0.0;
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors du calcul du total des dépenses: " + e.getMessage());
+        }
+    }
+
     // Calculer le total des dépenses d'une association sur une période
     public Double getTotalDepensesByAssociationAndPeriod(Long associationId, LocalDate startDate, LocalDate endDate) {
         try {
@@ -194,6 +288,16 @@ public class DepenseService {
             return total != null ? total : 0.0;
         } catch (Exception e) {
             throw new RuntimeException("Erreur lors du calcul du total des dépenses: " + e.getMessage());
+        }
+    }
+
+    // Obtenir l'année scolaire active d'une association
+    public AnneeScolaire getAnneeScolaireActiveByAssociation(Long associationId) {
+        try {
+            Optional<AnneeScolaire> anneeActive = anneeScolaireRepository.findAnneeScolaireActiveByAssociation(associationId);
+            return anneeActive.orElseThrow(() -> new RuntimeException("Aucune année scolaire active trouvée pour cette association"));
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la récupération de l'année scolaire active: " + e.getMessage());
         }
     }
 }
