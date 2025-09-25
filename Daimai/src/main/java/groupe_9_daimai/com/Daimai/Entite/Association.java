@@ -45,7 +45,7 @@ public class Association {
 
     @OneToMany(mappedBy = "association")
     @JsonManagedReference
-    private List<Enfant> Enfants;
+    private List<Enfant> enfants;
 
     @OneToMany(mappedBy = "association")
     private List<Notification> Notifications;
@@ -68,7 +68,7 @@ public class Association {
         this.telephone = telephone;
         this.photo = photo;
         this.estvalider = statutBloquer;
-        Enfants = enfants;
+        enfants = enfants;
         Notifications = notifications;
         Depenses = depenses;
         Administrateur = administrateur;
@@ -155,11 +155,11 @@ public class Association {
     }
 
     public List<Enfant> getEnfants() {
-        return Enfants;
+        return enfants;
     }
 
     public void setEnfants(List<Enfant> enfants) {
-        Enfants = enfants;
+        enfants = enfants;
     }
 
     public List<Notification> getNotifications() {
@@ -201,7 +201,7 @@ public class Association {
                 ", telephone=" + telephone +
                 ", photo='" + photo + '\'' +
                 ", estvalider=" + estvalider +
-                ", Enfants=" + Enfants +
+                ", Enfants=" + enfants +
                 ", Notifications=" + Notifications +
                 ", Depenses=" + Depenses +
                 ", Administrateur=" + Administrateur +

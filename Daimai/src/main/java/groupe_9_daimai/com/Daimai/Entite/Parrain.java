@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Set;
+import java.util.HashSet;
 
 @Entity
 @Table(name = "Parrain")
@@ -59,8 +61,8 @@ public class Parrain {
             joinColumns = @JoinColumn(name = "parrain_id"),
             inverseJoinColumns = @JoinColumn(name = "enfant_id")
     )
-    @JsonIgnore
-    private List<Enfant> enfants = new ArrayList<>();
+   // @JsonIgnore
+    private Set<Enfant> enfants = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "administrateur_id")
@@ -176,11 +178,11 @@ public class Parrain {
         this.statut = statut;
     }
 
-    public List<Enfant> getEnfants() {
+    public Set<Enfant> getEnfants() {
         return enfants;
     }
 
-    public void setEnfants(List<Enfant> enfants) {
+    public void setEnfants(Set<Enfant> enfants) {
         this.enfants = enfants;
     }
 
@@ -192,7 +194,7 @@ public class Parrain {
         this.administrateur = administrateur;
     }
 
-    public Parrain(Long id, String nom, String prenom, String email, String telephone, String motDepasse, Boolean roleUtilisateur, String profession, String adresse, LocalDate dateCreation, Boolean statut, List<Enfant> enfants, Administrateur administrateur) {
+    public Parrain(Long id, String nom, String prenom, String email, String telephone, String motDepasse, Boolean roleUtilisateur, String profession, String adresse, LocalDate dateCreation, Boolean statut, Set<Enfant> enfants, Administrateur administrateur) {
         this.id = id;
         this.nom = nom;
         this.prenom = prenom;

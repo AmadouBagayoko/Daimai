@@ -27,7 +27,7 @@ public class AssociationService {
         association.setAutorisation((dto.getAutorisation()));
 
         association.setEstvalider(false); // bloquée tant que l'admin ne valide pas
-        association.setMotDepasse("changeme123"); // mot de passe par défaut
+        association.setMotDepasse("Daimai2025"); // mot de passe par défaut
 
         return associationRepository.save(association);
     }

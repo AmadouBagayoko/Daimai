@@ -29,7 +29,8 @@ public class ParrainService {
         Enfant enfant = enfantRepository.findById(dto.getEnfantId())
                 .orElseThrow(() -> new RuntimeException("Enfant non trouvé"));
 
-        // Ajouter l’enfant à la liste du parrain
+        // Utilisation d'un Set : si l'enfant est déjà là, add() ne fait rien.
+        // Cette ligne gère l'unicité pour vous.
         parrain.getEnfants().add(enfant);
 
         return parrainRepository.save(parrain);

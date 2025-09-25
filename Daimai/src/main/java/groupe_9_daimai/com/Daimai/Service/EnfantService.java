@@ -7,7 +7,8 @@ import groupe_9_daimai.com.Daimai.Repository.EnfantRepository;
 import groupe_9_daimai.com.Daimai.Repository.AssociationRepository;
 import groupe_9_daimai.com.Daimai.DTO.EnfantDto;
 import groupe_9_daimai.com.Daimai.ReponseDto.EnfantResponseDTO;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import groupe_9_daimai.com.Daimai.Repository.ParrainRepository;
+import org.springframework.security.crypto.password.PasswordEncoder; // 👈 Nécessaire pour le hachage
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,23 +19,31 @@ public class EnfantService {
 
     private final EnfantRepository enfantRepository;
     private final AssociationRepository associationRepository;
+    private final ParrainRepository parrainRepository;
+    private final PasswordEncoder passwordEncoder;
 
-
-
-    public EnfantService(EnfantRepository enfantRepository, AssociationRepository associationRepository) {
+    // Constructeur mis à jour pour inclure PasswordEncoder
+    public EnfantService(EnfantRepository enfantRepository, AssociationRepository associationRepository, ParrainRepository parrainRepository,PasswordEncoder passwordEncoder) {
         this.enfantRepository = enfantRepository;
         this.associationRepository = associationRepository;
-
+        this.parrainRepository = parrainRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     // --- Création d’un enfant pour une association (LOGIQUE ADAPTÉE) ---
     public EnfantResponseDTO creerEnfantPourAssociation(Long associationId, EnfantDto enfantDTO) {
+
+        // 1. Récupération de l'Association
         Association association = associationRepository.findById(associationId)
                 .orElseThrow(() -> new RuntimeException("Association introuvable"));
 
-        Enfant enfant = new Enfant();
+        // 2. VÉRIFICATION DU STATUT : Empêche la création si l'association n'est pas active
+        if (association.getEstvalider() == null || !association.getEstvalider()) {
+            throw new IllegalStateException("L'association " + association.getNom() + " n'est pas active (statut 'estvalider' est faux ou nul) et ne peut pas créer d'enfant.");
+        }
 
-        // Mappage des champs du DTO
+        // 3. Mappage et configuration de l'Entité Enfant
+        Enfant enfant = new Enfant();
         enfant.setNom(enfantDTO.getNom());
         enfant.setPrenom(enfantDTO.getPrenom());
         enfant.setDateNaissance(enfantDTO.getDateNaissance());
@@ -46,15 +55,15 @@ public class EnfantService {
         enfant.setStatutAbandon(enfantDTO.getStatutAbandon() != null ? enfantDTO.getStatutAbandon() : false);
         enfant.setAssociation(association);
 
-        // 1. Logique de génération du mot de passe par défaut (en clair)
+        // 4. Logique de génération et de HACHAGE du mot de passe
         String anneeNaissance = String.valueOf(enfantDTO.getDateNaissance().getYear());
         String motDePasseClair = enfantDTO.getNom() + anneeNaissance;
 
-        // 2. Sauvegarde du mot de passe en clair (NON SÉCURISÉ)
-        enfant.setMotDepasse(motDePasseClair);
+        // 🚨 CORRECTION SÉCURITÉ : HACHAGE du mot de passe avant de sauvegarder
+        String motDePasseHache = passwordEncoder.encode(motDePasseClair);
+        enfant.setMotDepasse(motDePasseHache);
 
-        // NOTE: Il serait bon de mettre le nom en minuscule ou de le nettoyer pour la robustesse du mot de passe.
-
+        // 5. Sauvegarde
         Enfant saved = enfantRepository.save(enfant);
         return new EnfantResponseDTO(saved);
     }
@@ -99,9 +108,14 @@ public class EnfantService {
     }
 
     // Lister les enfants d’un parrain
-    public List<EnfantResponseDTO> listerEnfantsParParrain(Parrain parrain) {
+    public List<EnfantResponseDTO> listerEnfantsParParrain(Long parrainId) {
+
+        // 1. Charger l'entité Parrain GÉRÉE par JPA
+        Parrain parrainGere = parrainRepository.findById(parrainId)
+                .orElseThrow(() -> new RuntimeException("Parrain non trouvé avec l'ID: " + parrainId));
+
         return enfantRepository.findAll().stream()
-                .filter(e -> e.getParrains() != null && e.getParrains().contains(parrain))
+                .filter(e -> e.getParrains() != null && e.getParrains().contains(parrainGere))
                 .map(EnfantResponseDTO::new)
                 .collect(Collectors.toList());
     }

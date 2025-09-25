@@ -50,9 +50,7 @@ public class EnfantController {
     // Lister les enfants d’un parrain
     @GetMapping("/parrain/{parrainId}")
     public List<EnfantResponseDTO> listerEnfantsParParrain(@PathVariable Long parrainId) {
-        Parrain parrain = new Parrain();
-        parrain.setId(parrainId);
-        return enfantService.listerEnfantsParParrain(parrain);
+        return enfantService.listerEnfantsParParrain(parrainId);
     }
 
     // Obtenir le profil d’un enfant pour une association
