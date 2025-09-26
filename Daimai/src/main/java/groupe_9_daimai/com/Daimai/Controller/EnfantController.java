@@ -3,10 +3,11 @@ package groupe_9_daimai.com.Daimai.Controller;
 import groupe_9_daimai.com.Daimai.Entite.Association;
 import groupe_9_daimai.com.Daimai.Entite.Parrain;
 import groupe_9_daimai.com.Daimai.Service.EnfantService;
-import groupe_9_daimai.com.Daimai.DTO.EnfantDto;
+import groupe_9_daimai.com.Daimai.DTO.EnfantDto; // NOUVEL IMPORT
+import groupe_9_daimai.com.Daimai.DTO.EnfantUpdateDTO; // NOUVEL IMPORT
 import groupe_9_daimai.com.Daimai.ReponseDto.EnfantResponseDTO;
 import org.springframework.web.bind.annotation.*;
-
+import java.io.IOException; // 👈 Ajout
 import java.util.List;
 
 @RestController
@@ -20,23 +21,26 @@ public class EnfantController {
     }
 
     // Création d’un enfant POUR une association
-    @PostMapping("/association/{associationId}")
+    // 👈 CORRECTION : Utiliser @ModelAttribute et le DTO de création
+    @PostMapping(value = "/association/{associationId}", consumes = "multipart/form-data")
     public EnfantResponseDTO creerEnfantPourAssociation(
             @PathVariable Long associationId,
-            @RequestBody EnfantDto enfantDTO) {
-        return enfantService.creerEnfantPourAssociation(associationId, enfantDTO);
+            @ModelAttribute EnfantDto enfantDto) throws IOException {
+        return enfantService.creerEnfantPourAssociation(associationId, enfantDto);
     }
 
-    // Désactiver un enfant (abandon)
+    // Modifier un enfant (avec photo optionnelle)
+    // 👈 CORRECTION : Utiliser @ModelAttribute et le DTO de mise à jour
+    @PutMapping(value = "/{id}", consumes = "multipart/form-data")
+    public EnfantResponseDTO modifierEnfant(@PathVariable Long id, @ModelAttribute EnfantUpdateDTO enfantDTO) throws IOException {
+        return enfantService.modifierEnfant(id, enfantDTO);
+    }
+
+
+    // Désactiver un enfant
     @PutMapping("/{id}/desactiver")
     public EnfantResponseDTO desactiverEnfant(@PathVariable Long id) {
         return enfantService.desactiverEnfant(id);
-    }
-
-    // Modifier un enfant
-    @PutMapping("/{id}")
-    public EnfantResponseDTO modifierEnfant(@PathVariable Long id, @RequestBody EnfantDto enfantDTO) {
-        return enfantService.modifierEnfant(id, enfantDTO);
     }
 
     // Lister les enfants d’une association

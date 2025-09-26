@@ -6,7 +6,7 @@ import groupe_9_daimai.com.Daimai.DTO.AssociationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
+import org.springframework.security.crypto.password.PasswordEncoder;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -18,8 +18,10 @@ public class AssociationService {
     private AssociationRepository associationRepository;
 
     @Autowired
-    private FileStorageService fileStorageService; // 👈 AJOUT de l'injection du service de stockage
+    private FileStorageService fileStorageService; //
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     // 🔹 Création d'association (avec upload de fichiers)
     public Association creerAssociation(AssociationDTO dto) throws IOException {
         Association association = new Association();
@@ -41,10 +43,8 @@ public class AssociationService {
             String autorisationPath = fileStorageService.storeFile(autorisationFile);
             association.setAutorisation(autorisationPath);
         }
-
         association.setEstvalider(false);
-        association.setMotDepasse("Daimai2025");
-
+        association.setMotDepasse(passwordEncoder.encode("Daimai2025"));
         return associationRepository.save(association);
     }
 
