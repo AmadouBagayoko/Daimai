@@ -27,8 +27,12 @@ public interface PaiementRepository extends JpaRepository<Paiement, Long> {
     @Query("SELECT SUM(p.montant) FROM Paiement p WHERE p.statutPaiement = 'CONFIRME'")
     Double getTotalPaiementsConfirmes();
 
-    @Query("SELECT new groupe_9_daimai.com.Daimai.DTO.PaiementResponseDTO(p.id, p.montant, p.datePaiement, p.modePaiement, p.statutPaiement, p.parrain.id, p.parrain.nom, p.parrain.prenom) FROM Paiement p WHERE p.id = :id")
+
+
+    @Query("SELECT new groupe_9_daimai.com.Daimai.DTO.PaiementResponseDTO(p.id, p.montant) " +
+                "FROM Paiement p WHERE p.id = :id")
     PaiementResponseDTO findPaiementDTOById(@Param("id") Long id);
+
 
     @Query("SELECT new groupe_9_daimai.com.Daimai.DTO.PaiementResponseDTO(p.id, p.montant, p.datePaiement, p.modePaiement, p.statutPaiement, p.parrain.id, p.parrain.nom, p.parrain.prenom) FROM Paiement p")
     List<PaiementResponseDTO> findAllPaiementDTOs();

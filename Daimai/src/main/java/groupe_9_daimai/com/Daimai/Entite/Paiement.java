@@ -19,6 +19,11 @@ public class Paiement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "parrain_id")
+    private Parrain parrain;
+
+
     @Column
     private Double montant;
 

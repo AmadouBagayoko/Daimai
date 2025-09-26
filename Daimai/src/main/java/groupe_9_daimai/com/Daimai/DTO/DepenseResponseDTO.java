@@ -5,6 +5,7 @@ import groupe_9_daimai.com.Daimai.Entite.enums.CategorieDepense;
 import java.time.LocalDate;
 
 public class DepenseResponseDTO {
+
     private Long id;
     private Double montant;
     private CategorieDepense categorie;
@@ -15,7 +16,7 @@ public class DepenseResponseDTO {
     private String anneeScolaireLibelle;
     private Boolean anneeScolaireActive;
 
-    // Constructeurs
+    // ------------------------- CONSTRUCTEURS -------------------------
     public DepenseResponseDTO() {}
 
     public DepenseResponseDTO(Long id, Double montant, CategorieDepense categorie, LocalDate dateDepense,
@@ -32,7 +33,7 @@ public class DepenseResponseDTO {
         this.anneeScolaireActive = anneeScolaireActive;
     }
 
-    // Getters et Setters
+    // ------------------------- GETTERS & SETTERS -------------------------
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

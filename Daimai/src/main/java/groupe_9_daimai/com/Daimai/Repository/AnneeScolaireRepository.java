@@ -43,4 +43,6 @@ public interface AnneeScolaireRepository extends JpaRepository<AnneeScolaire, Lo
     boolean existsByAssociationIdAndActiveTrue(Long associationId);
 
     long countByAssociationIdAndActiveTrue(Long associationId);
+
+    List<AnneeScolaire> findByActiveTrue();
 }

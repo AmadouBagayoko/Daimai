@@ -516,7 +516,7 @@ public class AssociationService {
             paiement.setDatePaiement(LocalDate.now());
             paiement.setModePaiement(paiementRequestDTO.getModePaiement());
             paiement.setStatutPaiement(groupe_9_daimai.com.Daimai.Entite.enums.StatutPaiement.CONFIRME);
-            paiement.setParrain(parrainOpt.get());
+
 
             Paiement savedPaiement = paiementRepository.save(paiement);
 
@@ -527,9 +527,9 @@ public class AssociationService {
             responseDTO.setDatePaiement(savedPaiement.getDatePaiement());
             responseDTO.setModePaiement(savedPaiement.getModePaiement());
             responseDTO.setStatutPaiement(savedPaiement.getStatutPaiement());
-            responseDTO.setParrainId(savedPaiement.getParrain().getId());
+            /*responseDTO.setParrainId(savedPaiement.getParrain().getId());
             responseDTO.setParrainNom(savedPaiement.getParrain().getNom());
-            responseDTO.setParrainPrenom(savedPaiement.getParrain().getPrenom());
+            responseDTO.setParrainPrenom(savedPaiement.getParrain().getPrenom());*/
             responseDTO.setMessageStatut("Paiement enregistré avec succès");
 
             return responseDTO;
@@ -551,12 +551,12 @@ public class AssociationService {
 
             RapportScolaire rapport = new RapportScolaire();
             rapport.setEnfant(enfantOpt.get());
-            rapport.setDateRapport(rapportRequestDTO.getDateRapport());
+            /*rapport.setDateRapport(rapportRequestDTO.getDateRapport());
             rapport.setNotes(rapportRequestDTO.getNotes());
             rapport.setPresence(rapportRequestDTO.getPresence());
             rapport.setComportement(rapportRequestDTO.getComportement());
             rapport.setMoyenneGenerale(rapportRequestDTO.getMoyenneGenerale());
-            rapport.setPhotoClasse(rapportRequestDTO.getPhotoClasse());
+            rapport.setPhotoClasse(rapportRequestDTO.getPhotoClasse());*/
 
             RapportScolaire savedRapport = rapportScolaireRepository.save(rapport);
 
@@ -579,8 +579,8 @@ public class AssociationService {
                                 "Date: %s\nMoyenne: %.2f/20\nComportement: %s\n\n" +
                                 "Connectez-vous pour consulter le rapport complet.\n\n" +
                                 "Cordialement,\nL'équipe Daimai",
-                        parrain.getPrenom(), parrain.getNom(), enfant.getPrenom(), enfant.getNom(),
-                        rapport.getDateRapport(), rapport.getMoyenneGenerale(), rapport.getComportement()
+                        parrain.getPrenom(), parrain.getNom(), enfant.getPrenom(), enfant.getNom()
+                        //rapport.getDateRapport(), rapport.getMoyenneGenerale(), rapport.getComportement()
                 );
 
                 Notification notification = new Notification();

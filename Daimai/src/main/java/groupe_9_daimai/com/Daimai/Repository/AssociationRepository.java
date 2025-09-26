@@ -13,12 +13,15 @@ import java.util.Optional;
 public interface AssociationRepository extends JpaRepository<Association, Long> {
 
     Optional<Association> findByTelephone(String telephone);
+
     Optional<Association> findByEmail(String email);
+
     List<Association> findByDomaine(String domaine);
+
     List<Association> findByStatutBloquer(Boolean statutBloquer);
 
-    @Query("SELECT a FROM Association a WHERE a.administrateur.id = :administrateurId")
-    List<Association> findByAdministrateurId(@Param("administrateurId") Long administrateurId);
+    // Méthode corrigée avec la convention JPA
+    List<Association> findByAdministrateur_Id(Long id);
 
     @Query("SELECT COUNT(e) FROM Enfant e WHERE e.association.id = :associationId")
     Integer countEnfantsByAssociationId(@Param("associationId") Long associationId);

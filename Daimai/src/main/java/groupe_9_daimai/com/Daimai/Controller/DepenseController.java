@@ -135,18 +135,6 @@ public class DepenseController {
         }
     }
 
-    // Récupérer les dépenses visibles par les parrains (année active)
-    @GetMapping("/association/{associationId}/visibles-parrains")
-    public ResponseEntity<?> getDepensesVisiblesParParrains(@PathVariable Long associationId) {
-        try {
-            List<DepenseResponseDTO> depenses = depenseService.getDepensesVisiblesParParrains(associationId);
-            return ResponseEntity.ok(depenses);
-        } catch (RuntimeException e) {
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-        }
-    }
 
     // Récupérer les dépenses par catégorie
     @GetMapping("/categorie/{categorie}")

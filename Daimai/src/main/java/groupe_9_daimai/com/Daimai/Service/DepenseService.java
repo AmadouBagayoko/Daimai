@@ -202,14 +202,6 @@ public class DepenseService {
         }
     }
 
-    // Récupérer les dépenses visibles par les parrains (année active)
-    public List<DepenseResponseDTO> getDepensesVisiblesParParrains(Long associationId) {
-        try {
-            return depenseRepository.findDepensesVisiblesParParrains(associationId);
-        } catch (Exception e) {
-            throw new RuntimeException("Erreur lors de la récupération des dépenses visibles: " + e.getMessage());
-        }
-    }
 
     // Récupérer les dépenses par catégorie avec conversion DTO
     public List<DepenseResponseDTO> getDepensesByCategorie(CategorieDepense categorie) {

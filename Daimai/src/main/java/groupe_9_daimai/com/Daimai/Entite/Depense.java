@@ -24,7 +24,7 @@ public class Depense {
     private Double montant;
 
     @Column
-    private CategorieDepense Categorie;
+    private CategorieDepense categorie;
 
     @Column
     private LocalDate dateDepense;

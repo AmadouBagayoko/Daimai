@@ -20,7 +20,7 @@ public class EspecesProcessor implements PaiementProcessor {
             String codeTransaction = "ESP_" + System.currentTimeMillis();
 
             ProcessPaiementResult result = new ProcessPaiementResult(true, codeTransaction,
-                    "Paiement en espèces enregistré - Code: " + codeTransaction, StatutPaiement.EN_ATTENTE_CONFIRMATION);
+                    "Paiement en espèces enregistré - Code: " + codeTransaction, StatutPaiement.EN_ATTENTE);
             result.setCodeValidation(codeTransaction);
 
             return result;
@@ -33,6 +33,6 @@ public class EspecesProcessor implements PaiementProcessor {
 
     @Override
     public StatutPaiement checkStatus(String transactionId) {
-        return StatutPaiement.EN_ATTENTE_CONFIRMATION;
+        return StatutPaiement.EN_ATTENTE;
     }
 }
