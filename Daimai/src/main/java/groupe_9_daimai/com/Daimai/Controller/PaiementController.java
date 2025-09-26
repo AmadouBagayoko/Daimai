@@ -3,7 +3,7 @@ package groupe_9_daimai.com.Daimai.Controller;
 import groupe_9_daimai.com.Daimai.DTO.PaiementRequestDTO;
 import groupe_9_daimai.com.Daimai.DTO.PaiementResponseDTO;
 import groupe_9_daimai.com.Daimai.Entite.enums.StatutPaiement;
-import groupe_9_daimai.com.Daimai.Service.PaiementService;
+import groupe_9_daimai.com.Daimai.Service.Paiement.PaiementService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;

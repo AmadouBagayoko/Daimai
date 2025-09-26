@@ -1,4 +1,4 @@
-package groupe_9_daimai.com.Daimai.Service;
+package groupe_9_daimai.com.Daimai.Service.Paiement;
 
 import groupe_9_daimai.com.Daimai.DTO.PaiementRequestDTO;
 import groupe_9_daimai.com.Daimai.DTO.PaiementResponseDTO;
@@ -7,8 +7,7 @@ import groupe_9_daimai.com.Daimai.Entite.Parrain;
 import groupe_9_daimai.com.Daimai.Entite.enums.StatutPaiement;
 import groupe_9_daimai.com.Daimai.Repository.PaiementRepository;
 import groupe_9_daimai.com.Daimai.Repository.ParrainRepository;
-import groupe_9_daimai.com.Daimai.Service.Paiement.PaiementProcessor;
-import groupe_9_daimai.com.Daimai.Service.Paiement.ProcessPaiementResult;
+import groupe_9_daimai.com.Daimai.Service.Paiement.Processor.PaiementProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,9 +44,6 @@ public class PaiementService {
         dto.setDatePaiement(paiement.getDatePaiement());
         dto.setModePaiement(paiement.getModePaiement());
         dto.setStatutPaiement(paiement.getStatutPaiement());
-        dto.setParrainId(paiement.getParrain().getId());
-        dto.setParrainNom(paiement.getParrain().getNom());
-        dto.setParrainPrenom(paiement.getParrain().getPrenom());
         return dto;
     }
 
@@ -57,7 +53,6 @@ public class PaiementService {
         paiement.setMontant(dto.getMontant());
         paiement.setModePaiement(dto.getModePaiement());
         paiement.setDatePaiement(dto.getDatePaiement() != null ? dto.getDatePaiement() : LocalDate.now());
-        paiement.setParrain(parrain);
         return paiement;
     }
 

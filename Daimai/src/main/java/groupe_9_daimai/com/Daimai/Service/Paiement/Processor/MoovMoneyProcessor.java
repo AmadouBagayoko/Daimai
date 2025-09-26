@@ -1,8 +1,9 @@
-package groupe_9_daimai.com.Daimai.Service.Paiement;
+package groupe_9_daimai.com.Daimai.Service.Paiement.Processor;
 
 import groupe_9_daimai.com.Daimai.DTO.PaiementRequestDTO;
 import groupe_9_daimai.com.Daimai.Entite.enums.ModePaiement;
 import groupe_9_daimai.com.Daimai.Entite.enums.StatutPaiement;
+import groupe_9_daimai.com.Daimai.Service.Paiement.ProcessPaiementResult;
 import org.springframework.stereotype.Service;
 
 @Service

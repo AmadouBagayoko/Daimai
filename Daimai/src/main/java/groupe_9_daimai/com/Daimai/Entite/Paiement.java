@@ -2,7 +2,6 @@ package groupe_9_daimai.com.Daimai.Entite;
 
 import groupe_9_daimai.com.Daimai.Entite.enums.ModePaiement;
 import groupe_9_daimai.com.Daimai.Entite.enums.StatutPaiement;
-import groupe_9_daimai.com.Daimai.Entite.enums.TypeNotifcation;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,23 +20,22 @@ public class Paiement {
     private Long id;
 
     @Column
-    private double montant;
+    private Double montant;
 
-    @Column
-    private LocalDate DatePaiement;
+    @Column(name = "date_paiement")
+    private LocalDate datePaiement;
 
-    @Column
+    @Enumerated(EnumType.STRING)
+    @Column(name = "mode_paiement")
     private ModePaiement modePaiement;
 
-    @Column
+    @Enumerated(EnumType.STRING)
+    @Column(name = "statut_paiement")
     private StatutPaiement statutPaiement;
-
 
     @OneToMany(mappedBy = "paiement")
     private List<AffectationPaiement> affectationPaiements = new ArrayList<>();
 
     @OneToOne(mappedBy = "paiement")
     private Recu recu;
-
-
 }

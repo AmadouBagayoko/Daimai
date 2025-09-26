@@ -1,5 +1,6 @@
 package groupe_9_daimai.com.Daimai.Repository;
 
+import groupe_9_daimai.com.Daimai.DTO.DepenseResponseDTO;
 import groupe_9_daimai.com.Daimai.Entite.Depense;
 import groupe_9_daimai.com.Daimai.Entite.enums.CategorieDepense;
 import org.springframework.data.jpa.repository.JpaRepository;
