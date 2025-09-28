@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference; // NOUVEL IMPORT
+
 import java.util.List;
 
 @Entity
@@ -39,10 +41,11 @@ public class Association {
     private String photo;
 
     @Column
-    private Boolean statutBloquer;
+    private Boolean estvalider;
 
     @OneToMany(mappedBy = "association")
-    private List<Enfant> Enfants;
+    @JsonManagedReference
+    private List<Enfant> enfants;
 
     @OneToMany(mappedBy = "association")
     private List<Notification> Notifications;
@@ -64,8 +67,8 @@ public class Association {
         this.autorisation = autorisation;
         this.telephone = telephone;
         this.photo = photo;
-        this.statutBloquer = statutBloquer;
-        Enfants = enfants;
+        this.estvalider = statutBloquer;
+        enfants = enfants;
         Notifications = notifications;
         Depenses = depenses;
         Administrateur = administrateur;
@@ -143,20 +146,20 @@ public class Association {
         this.photo = photo;
     }
 
-    public Boolean getStatutBloquer() {
-        return statutBloquer;
+    public Boolean getEstvalider() {
+        return estvalider;
     }
 
-    public void setStatutBloquer(Boolean statutBloquer) {
-        this.statutBloquer = statutBloquer;
+    public void setEstvalider(Boolean statutBloquer) {
+        this.estvalider = statutBloquer;
     }
 
     public List<Enfant> getEnfants() {
-        return Enfants;
+        return enfants;
     }
 
     public void setEnfants(List<Enfant> enfants) {
-        Enfants = enfants;
+        enfants = enfants;
     }
 
     public List<Notification> getNotifications() {
@@ -197,8 +200,8 @@ public class Association {
                 ", autorisation='" + autorisation + '\'' +
                 ", telephone=" + telephone +
                 ", photo='" + photo + '\'' +
-                ", statutBloquer=" + statutBloquer +
-                ", Enfants=" + Enfants +
+                ", estvalider=" + estvalider +
+                ", Enfants=" + enfants +
                 ", Notifications=" + Notifications +
                 ", Depenses=" + Depenses +
                 ", Administrateur=" + Administrateur +

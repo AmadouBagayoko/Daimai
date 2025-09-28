@@ -5,9 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "Enfant")
@@ -48,13 +48,15 @@ public class Enfant {
 
     @ManyToOne
     @JoinColumn(name = "association_id")
+    @JsonBackReference
     private Association association;
 
     @OneToMany(mappedBy = "enfant")
     private List<RapportScolaire> rapportScolaire;
 
     @ManyToMany(mappedBy = "enfants")
-    private List<Parrain> parrains ;
+    @JsonBackReference
+    private Set<Parrain> parrains = new HashSet<>();
 
     public Enfant() {}
 
@@ -78,7 +80,7 @@ public class Enfant {
                 '}';
     }
 
-    public Enfant(Long id, String nom, String prenom, LocalDate dateNaissance, String niveauScolaire, String urlPhoto, String tuteur, String telephone, String email, Boolean statutAbandon, String motDepasse, Association association, List<RapportScolaire> rapportScolaire, List<Parrain> parrains) {
+    public Enfant(Long id, String nom, String prenom, LocalDate dateNaissance, String niveauScolaire, String urlPhoto, String tuteur, String telephone, String email, Boolean statutAbandon, String motDepasse, Association association, List<RapportScolaire> rapportScolaire, Set<Parrain> parrains) {
         this.id = id;
         this.nom = nom;
         this.prenom = prenom;
@@ -199,11 +201,11 @@ public class Enfant {
         this.rapportScolaire = rapportScolaire;
     }
 
-    public List<Parrain> getParrains() {
+    public Set<Parrain> getParrains() {
         return parrains;
     }
 
-    public void setParrains(List<Parrain> parrains) {
+    public void setParrains(Set<Parrain> parrains) {
         this.parrains = parrains;
     }
 }

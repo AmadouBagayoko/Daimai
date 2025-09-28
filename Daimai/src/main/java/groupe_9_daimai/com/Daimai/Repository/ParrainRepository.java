@@ -9,4 +9,6 @@ public interface ParrainRepository extends JpaRepository<Parrain, Long> {
 
 
     Optional<Parrain> findByTelephone(String telephone);
+    boolean existsByEmail(String email);
+    boolean existsByTelephone(String telephone);
 }

@@ -24,14 +24,14 @@ public class Securite {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf( csrf ->csrf.disable())
+        http.csrf(csrf -> csrf.disable()) // désactive CSRF
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/Connexion", "/api/auth/Inscription", "/api/notification/send").permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll() // autorise toutes les requêtes
                 );
-        return http.build();
 
+        return http.build();
     }
+
 
 
 
