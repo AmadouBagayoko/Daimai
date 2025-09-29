@@ -19,6 +19,8 @@ public interface EnfantRepository extends JpaRepository<Enfant, Long> {
 
     @Query("SELECT e FROM Enfant e WHERE e.association.id = :associationId AND e.statutAbandon = false")
     List<Enfant> findEnfantsActifsByAssociation(@Param("associationId") Long associationId);
+    boolean existsByEmail(String email);
+    boolean existsByTelephone(String telephone);
 
     @Query("SELECT e, p FROM Enfant e JOIN e.parrains p WHERE e.association.id = :associationId")
     List<Object[]> findParrainagesByAssociationId(@Param("associationId") Long associationId);
