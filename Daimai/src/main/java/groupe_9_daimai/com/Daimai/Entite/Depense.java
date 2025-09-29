@@ -24,7 +24,7 @@ public class Depense {
     private Double montant;
 
     @Column
-    private CategorieDepense Categorie;
+    private CategorieDepense categorie;
 
     @Column
     private LocalDate dateDepense;
@@ -37,4 +37,9 @@ public class Depense {
             name = "association_id"
     )
     private Association association ;
+
+    @ManyToOne
+    @JoinColumn(name = "annee_scolaire_id")
+    private AnneeScolaire anneeScolaire;
+
 }
