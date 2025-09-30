@@ -1,7 +1,7 @@
 package groupe_9_daimai.com.Daimai.Controller;
 
+import groupe_9_daimai.com.Daimai.DTO.NotificationDto;
 import groupe_9_daimai.com.Daimai.Entite.Notification;
-import groupe_9_daimai.com.Daimai.Entite.enums.TypeNotifcation;
 import groupe_9_daimai.com.Daimai.Service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +15,8 @@ public class NotificationController {
     private NotificationService notificationService;
 
     // Test d'envoi d'une notification
-
     @PostMapping("/send")
-    public ResponseEntity<String> sendNotification(@RequestBody Notification request) {
+    public ResponseEntity<String> sendNotification(@RequestBody NotificationDto request) {
         try {
             Notification notification = new Notification();
             notification.setRecepteur(request.getRecepteur());
@@ -32,4 +31,5 @@ public class NotificationController {
             return ResponseEntity.status(500).body("Erreur lors de l'envoi : " + e.getMessage());
         }
     }
+
 }

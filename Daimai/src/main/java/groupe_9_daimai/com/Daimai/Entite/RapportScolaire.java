@@ -11,8 +11,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "RapportScolaire")
-@Getter
-@Setter @NoArgsConstructor
 public class RapportScolaire {
 
     @Id
@@ -39,6 +37,8 @@ public class RapportScolaire {
     @ManyToOne
     @JoinColumn(name = "enfant_id")
     private Enfant enfant;
+
+    public RapportScolaire() {}
 
     public Long getId() {
         return id;

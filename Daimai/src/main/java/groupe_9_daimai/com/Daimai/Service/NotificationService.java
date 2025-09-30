@@ -3,7 +3,6 @@ package groupe_9_daimai.com.Daimai.Service;
 import groupe_9_daimai.com.Daimai.Entite.Notification;
 import groupe_9_daimai.com.Daimai.Entite.enums.TypeNotifcation;
 import groupe_9_daimai.com.Daimai.Repository.NotificationRepository;
-import groupe_9_daimai.com.Daimai.Service.SmsEnvoi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -18,7 +17,7 @@ public class NotificationService {
     private JavaMailSender mailSender; // Pour Email
 
     @Autowired
-    private SmsEnvoi smsSender; // Pour SMS
+    private SmsService smsSender; // J'ai corrigé le nom de la classe ici
 
     @Autowired
     private NotificationRepository notificationRepository;
@@ -30,17 +29,18 @@ public class NotificationService {
         if (notification.getTypeNotifcation() == TypeNotifcation.EMAIL) {
             sendEmail(notification.getRecepteur(), "Notification", notification.getContenue());
         } else if (notification.getTypeNotifcation() == TypeNotifcation.SMS) {
-            smsSender.sendSms(notification.getRecepteur(), notification.getContenue(), notification.getEnvoyeur());
+            // Ordre corrigé : from (envoyeur), to (recepteur), message (contenue)
+            smsSender.sendSms(notification.getEnvoyeur(), notification.getRecepteur(), notification.getContenue());
         }
 
         notificationRepository.save(notification);
     }
 
-    private void sendEmail(String to, String subject, String message) {
+    private void sendEmail(String Recepteur, String sujet, String contenue) {
         SimpleMailMessage mail = new SimpleMailMessage();
-        mail.setTo(to);
-        mail.setSubject(subject);
-        mail.setText(message);
+        mail.setTo(Recepteur);
+        mail.setSubject(sujet);
+        mail.setText(contenue);
         mailSender.send(mail);
     }
 }

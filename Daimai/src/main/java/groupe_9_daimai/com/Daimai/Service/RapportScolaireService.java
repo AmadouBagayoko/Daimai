@@ -15,6 +15,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
+
 
 @Service
 public class RapportScolaireService {
@@ -55,6 +57,18 @@ public class RapportScolaireService {
         }
 
         return rapportScolaireRepository.save(rapportScolaire);
+    }
+
+    public List<RapportScolaire> LireRapportScolaire() {
+        return rapportScolaireRepository.findAll();
+    }
+
+    public void SupprimerRapportScolaire(Long id) {
+        RapportScolaire rapportScolaire = rapportScolaireRepository.findById(id).orElseThrow(
+                ()-> new IllegalArgumentException("L'id n'existe pas")
+        );
+        rapportScolaireRepository.deleteById(id);
+
     }
 
 }

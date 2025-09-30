@@ -8,8 +8,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PutMapping;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +27,7 @@ public class AdministrateurService {
     PasswordEncoder passwordEncoder;
 
 
-    public void CreationAdministrateur ( Administrateur administrateur ){
+    public Administrateur CreationAdministrateur (Administrateur administrateur ){
         Optional<Administrateur> administrateurOptional = administrateurRepository.findByEmail(administrateur.getEmail());
         if(administrateurOptional.isPresent()){
             throw new IllegalArgumentException("Email Already Exists");
@@ -33,7 +35,8 @@ public class AdministrateurService {
 
         administrateur.setMotDepasse(passwordEncoder.encode(administrateur.getMotDepasse()));
 
-        administrateurRepository.save(administrateur);
+        return administrateurRepository.save(administrateur);
+
     }
 
     public Administrateur ModifierAdministrateur (Long id, Administrateur administrateurDetails){
@@ -67,6 +70,7 @@ public class AdministrateurService {
     public List<Administrateur> LireAdministrateur(){
         return administrateurRepository.findAll();
     }
+
 
 
 
