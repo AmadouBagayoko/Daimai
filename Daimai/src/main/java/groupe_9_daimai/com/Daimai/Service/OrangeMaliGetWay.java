@@ -14,10 +14,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Service("ORANGE_MONEY")
 public class OrangeMaliGetWay implements PaymentGateWay {
 
-    @Value("${orange.mali.api.url}")
+
     private String apiUrl;
 
-    @Value("${orange.mali.api.token}")
+
     private String apiToken;
 
     private  WebClient webClient;

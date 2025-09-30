@@ -52,7 +52,7 @@ public class PaymentService {
     }
 
     public void updatePaymentStatus(String transactionId, String newStatus) {
-        Paiement paiement = paiementRepository.findPaiementByTransactionId(Long.parseLong(transactionId))
+        Paiement paiement = paiementRepository.findPaiementByTransactionId(transactionId)
                 .orElseThrow(() -> new RuntimeException("Paiement non trouvé avec l'ID de transaction : " + transactionId));
 
         if ("SUCCESS".equalsIgnoreCase(newStatus)) {
